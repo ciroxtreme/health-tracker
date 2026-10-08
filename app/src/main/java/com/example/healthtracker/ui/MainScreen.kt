@@ -43,6 +43,7 @@ enum class AppDestination(val label: String, val icon: String) {
 @Composable
 fun MainScreen(
     viewModel: HealthViewModel,
+    initialAction: String? = null,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -52,7 +53,7 @@ fun MainScreen(
     // Navigation state
     val context = LocalContext.current
     var currentDestination by remember { mutableStateOf(AppDestination.TIMELINE) }
-    var isAddingEntry by remember { mutableStateOf(false) }
+    var isAddingEntry by remember { mutableStateOf(initialAction == "ACTION_ADD_ENTRY") }
     var entryForFullEdit by remember { mutableStateOf<HealthEntryEntity?>(null) }
     var showOverflowMenu by remember { mutableStateOf(false) }
     var showApkExportDialog by remember { mutableStateOf(false) }
