@@ -47,6 +47,9 @@ fun MasterDataManagerScreen(
     var editingHabit by remember { mutableStateOf<HabitEntity?>(null) }
     var showAddHabitDialog by remember { mutableStateOf(false) }
 
+    // State for delete confirmation dialog
+    var itemToDelete by remember { mutableStateOf<Pair<String, () -> Unit>?>(null) }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -129,7 +132,9 @@ fun MasterDataManagerScreen(
                             sub = if (item.defaultDose.isNotBlank()) "${item.category} • ${item.defaultDose}" else item.category,
                             description = item.description,
                             onEdit = { editingIntervention = item },
-                            onDelete = { viewModel.deleteIntervention(item) }
+                            onDelete = {
+                                itemToDelete = Pair(item.name) { viewModel.deleteIntervention(item) }
+                            }
                         )
                     }
                 }
@@ -145,7 +150,9 @@ fun MasterDataManagerScreen(
                             sub = "Area: ${item.defaultBodyPart}",
                             description = item.description,
                             onEdit = { editingSymptom = item },
-                            onDelete = { viewModel.deleteSymptom(item) }
+                            onDelete = {
+                                itemToDelete = Pair(item.name) { viewModel.deleteSymptom(item) }
+                            }
                         )
                     }
                 }
@@ -161,7 +168,9 @@ fun MasterDataManagerScreen(
                             sub = "Kategori: ${item.category}",
                             description = item.description,
                             onEdit = { editingActivity = item },
-                            onDelete = { viewModel.deleteActivity(item) }
+                            onDelete = {
+                                itemToDelete = Pair(item.name) { viewModel.deleteActivity(item) }
+                            }
                         )
                     }
                 }
@@ -177,12 +186,40 @@ fun MasterDataManagerScreen(
                             sub = "Target: ${item.targetDaysPerWeek} hari / minggu",
                             description = item.description,
                             onEdit = { editingHabit = item },
-                            onDelete = { viewModel.deleteHabit(item) }
+                            onDelete = {
+                                itemToDelete = Pair(item.name) { viewModel.deleteHabit(item) }
+                            }
                         )
                     }
                 }
             }
         }
+    }
+
+    // Confirmation dialog before deletion
+    if (itemToDelete != null) {
+        val (itemName, deleteAction) = itemToDelete!!
+        AlertDialog(
+            onDismissRequest = { itemToDelete = null },
+            title = { Text("Konfirmasi Hapus Data Master", fontWeight = FontWeight.Bold) },
+            text = { Text("Apakah Anda yakin ingin menghapus \"$itemName\" dari Data Master? Action ini tidak dapat dibatalkan.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        deleteAction()
+                        itemToDelete = null
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) {
+                    Text("Hapus", color = MaterialTheme.colorScheme.onError)
+                }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { itemToDelete = null }) {
+                    Text("Batal")
+                }
+            }
+        )
     }
 
     // Intervensi Add/Edit Dialog
