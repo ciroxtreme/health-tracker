@@ -1,0 +1,6 @@
+{
+  "name": "CiroMind",
+  "description": "Aplikasi N-of-1 Clinical Trial, Routine & Intervention Analytics berbasis Local-First untuk evaluasi efektivitas intervensi, deteksi pemicu aktivitas, dan matriks kapasitas mental vs nyeri.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
