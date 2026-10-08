@@ -25,6 +25,7 @@ import com.example.healthtracker.model.InterventionEntity
 import com.example.healthtracker.model.SymptomEntity
 import com.example.healthtracker.ui.HealthUiState
 import com.example.healthtracker.ui.HealthViewModel
+import com.example.ui.theme.LocalHarmonizedColors
 
 @Composable
 fun MasterDataManagerScreen(
@@ -563,12 +564,14 @@ fun MasterItemCard(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
+    val colors = LocalHarmonizedColors.current
     var isDescriptionExpanded by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = colors.cardBackground),
+        border = BorderStroke(0.75.dp, colors.cardBorder),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
@@ -578,16 +581,15 @@ fun MasterItemCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(text = title, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge)
-                    Text(text = sub, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(text = title, fontWeight = FontWeight.SemiBold, style = MaterialTheme.typography.bodyLarge, color = colors.textPrimary)
+                    Text(text = sub, style = MaterialTheme.typography.bodySmall, color = colors.textSecondary)
                 }
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Pill button ala Timeline: [Ikon Tulis] Lihat Catatan [v] / Tutup Catatan [^]
                     Surface(
-                        color = Color(0xFFECFDF5),
+                        color = if (isDescriptionExpanded) colors.pillActiveBg else colors.pillInactiveBg,
                         shape = RoundedCornerShape(12.dp),
-                        border = BorderStroke(1.dp, Color(0xFFA7F3D0)),
                         modifier = Modifier
                             .clickable { isDescriptionExpanded = !isDescriptionExpanded }
                             .padding(end = 6.dp)
@@ -601,7 +603,7 @@ fun MasterItemCard(
                                 text = if (isDescriptionExpanded) "Tutup Catatan ˄" else "Lihat Catatan ˅",
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = Color(0xFF047857)
+                                color = if (isDescriptionExpanded) colors.pillActiveText else colors.pillInactiveText
                             )
                         }
                     }
@@ -615,16 +617,16 @@ fun MasterItemCard(
                 }
             }
 
-            // Expandable Mint Green Description Box with Bullet Points
+            // Expandable Harmonized Description Box (Matching Timeline aesthetic)
             AnimatedVisibility(
                 visible = isDescriptionExpanded,
                 enter = expandVertically() + fadeIn(),
                 exit = shrinkVertically() + fadeOut()
             ) {
                 Surface(
-                    color = Color(0xFFECFDF5), // Latar belakang hijau mint muda pucat
+                    color = colors.infoBlueBg,
                     shape = RoundedCornerShape(8.dp),
-                    border = BorderStroke(1.dp, Color(0xFFA7F3D0)), // Garis tepi (border) tipis hijau muda
+                    border = BorderStroke(0.75.dp, colors.infoBlueText.copy(alpha = 0.25f)),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(top = 10.dp)
@@ -634,7 +636,7 @@ fun MasterItemCard(
                             Text(
                                 text = "Belum ada deskripsi / catatan poin untuk item ini. Tekan ikon edit (pensil) untuk menambahkan.",
                                 fontSize = 11.5.sp,
-                                color = Color(0xFF047857), // Teks hijau tua
+                                color = colors.infoBlueText,
                                 fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
                             )
                         } else {
@@ -653,12 +655,12 @@ fun MasterItemCard(
                                             text = bulletSymbol,
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF047857) // Teks hijau tua
+                                            color = colors.infoBlueText
                                         )
                                         Text(
                                             text = itemText,
                                             fontSize = 12.sp,
-                                            color = Color(0xFF047857), // Teks hijau tua
+                                            color = colors.infoBlueText,
                                             lineHeight = 16.sp
                                         )
                                     }
@@ -666,7 +668,7 @@ fun MasterItemCard(
                                     Text(
                                         text = trimmed,
                                         fontSize = 12.sp,
-                                        color = Color(0xFF047857), // Teks hijau tua
+                                        color = colors.infoBlueText,
                                         lineHeight = 16.sp,
                                         modifier = Modifier.padding(vertical = 2.dp)
                                     )
