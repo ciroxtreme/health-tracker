@@ -79,6 +79,32 @@ fun MoodPainMatrixScreen(
         }
 
         item {
+            // Friendly Guide Card for user
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    Text(
+                        text = "💡 Cara Membaca Statistik Ini (Gampang Saja!):",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "• Semakin sering kamu merasa nyeri hebat di saat mood jelek/stres, persentase bedanya (+%) bakal makin tinggi.\n" +
+                                "• Sebaliknya, kalau saat mood jelek kamu jarang nyeri, atau saat mood bagus nyeri tetap tinggi, persentase bedanya akan mengecil/stabil.\n" +
+                                "🎯 Tujuannya: Supaya kamu & dokter tahu apakah rasa sakitmu dipicu oleh stres pikiran atau murni masalah fisik organ tubuh.",
+                        fontSize = 11.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        lineHeight = 16.sp
+                    )
+                }
+            }
+        }
+
+        item {
             // Sensitivity Gap Card
             Card(
                 modifier = Modifier.fillMaxWidth().testTag("sensitivity_gap_card"),

@@ -688,11 +688,11 @@ object AnalyticsEngine {
 
         val insight = when {
             sensitivityIncrease >= 40 ->
-                "Terdapat modulasi kognitif yang kuat: persepsi nyeri fisik meningkat hingga $sensitivityIncrease% saat kapasitas mental berada pada titik terendah (krisis/stres). Mengintegrasikan teknik ketahanan mental (mindfulness/relaksasi) sangat dianjurkan."
+                "💡 **Pengaruh Pikiran Sangat Kuat (+${sensitivityIncrease}%)**\nNyeri fisik terasa jauh lebih menyiksa saat kamu lagi stres/capek mental. Selain pengobatan fisik, penting banget buat kamu ngelakuin relaksasi atau istirahat pikiran!"
             sensitivityIncrease in 15..39 ->
-                "Sensitivitas nyeri meningkat $sensitivityIncrease% saat kondisi mental tertekan. Faktor beban psikologis terbukti memperberat gejala fisik."
+                "💡 **Stres Mulai Memperparah Nyeri (+${sensitivityIncrease}%)**\nBeban emosional/stres terbukti menambah rasa sakit yang dirasakan. Jaga suasana hati agar ambang tahan nyeri tubuhmu tetap tinggi."
             else ->
-                "Persepsi nyeri relatif stabil terhadap variasi kapasitas mental. Intervensi fisik/farmakologis primer tetap menjadi fokus utama."
+                "💡 **Nyeri Murni Masalah Fisik**\nTingkat rasa sakitmu stabil dan tidak terlalu dipengaruhi oleh mood. Penanganan medis/fisik dan obat-obatan adalah fokus utamanya."
         }
 
         return MoodPainAnalysis(
