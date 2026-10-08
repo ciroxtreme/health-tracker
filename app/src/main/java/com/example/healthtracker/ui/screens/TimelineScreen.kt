@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -320,7 +321,7 @@ fun TimelineScreen(
                             shape = RoundedCornerShape(8.dp),
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                         ) {
-                            Icon(Icons.Default.ChevronLeft, contentDescription = "Hari Sebelumnya", modifier = Modifier.size(16.dp))
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = "Hari Sebelumnya", modifier = Modifier.size(16.dp))
                             Text("Sebelumnya", fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
 
@@ -379,7 +380,7 @@ fun TimelineScreen(
                             contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             Text("Selanjutnya", fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                            Icon(Icons.Default.ChevronRight, contentDescription = "Hari Selanjutnya", modifier = Modifier.size(16.dp))
+                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = "Hari Selanjutnya", modifier = Modifier.size(16.dp))
                         }
                     }
                 }
