@@ -191,7 +191,7 @@ fun SettingsScreen(
                     Icon(
                         imageVector = Icons.Default.ViewAgenda,
                         contentDescription = null,
-                        tint = colors.brandPrimary,
+                        tint = colors.pillActiveBg,
                         modifier = Modifier.size(24.dp)
                     )
                 }

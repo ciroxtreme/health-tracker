@@ -349,7 +349,7 @@ fun TimelineScreen(
                                 text = dateHeaderFormat.format(Date(selectedDailyDateMillis)),
                                 fontSize = 12.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = colors.brandPrimary
+                                color = colors.textPrimary
                             )
                             if (isToday) {
                                 Text(

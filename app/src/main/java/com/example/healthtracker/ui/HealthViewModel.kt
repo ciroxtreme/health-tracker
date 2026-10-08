@@ -55,13 +55,13 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     private val settingsFlow = combine(
-        _timeRangeFilter,
-        _uiDensityScale,
-        _themeMode,
-        _timelineMode,
-        _isAppLocked,
-        _statusMessage
-    ) { filter, density, theme, timelineMode, isLocked, msg ->
+        combine(_timeRangeFilter, _uiDensityScale, _themeMode) { filter, density, theme ->
+            Triple(filter, density, theme)
+        },
+        combine(_timelineMode, _isAppLocked, _statusMessage) { timelineMode, isLocked, msg ->
+            Triple(timelineMode, isLocked, msg)
+        }
+    ) { (filter, density, theme), (timelineMode, isLocked, msg) ->
         SettingsData(filter, density, theme, timelineMode, isLocked, msg)
     }
 
