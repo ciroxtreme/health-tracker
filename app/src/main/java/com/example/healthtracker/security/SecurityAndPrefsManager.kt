@@ -14,6 +14,7 @@ class SecurityAndPrefsManager(context: Context) {
         private const val KEY_PIN_ENABLED = "pin_enabled"
         private const val KEY_UI_DENSITY = "ui_density_scale"
         private const val KEY_THEME_MODE = "theme_mode" // "light", "dark", "system"
+        private const val KEY_TIMELINE_MODE = "timeline_mode" // "normal", "daily"
         private const val DEFAULT_UI_DENSITY = 0.85f // Mobile-first default dense UI
     }
 
@@ -64,6 +65,16 @@ class SecurityAndPrefsManager(context: Context) {
     fun setThemeMode(mode: String) {
         prefs.edit()
             .putString(KEY_THEME_MODE, mode)
+            .apply()
+    }
+
+    fun getTimelineMode(): String {
+        return prefs.getString(KEY_TIMELINE_MODE, "normal") ?: "normal"
+    }
+
+    fun setTimelineMode(mode: String) {
+        prefs.edit()
+            .putString(KEY_TIMELINE_MODE, mode)
             .apply()
     }
 }

@@ -158,6 +158,68 @@ fun SettingsScreen(
             }
         }
 
+        // 1B. MODE TAMPILAN TIMELINE (NORMAL VS HARIAN)
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = colors.cardBackground),
+            border = BorderStroke(0.75.dp, colors.cardBorder),
+            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+        ) {
+            Column(modifier = Modifier.padding(14.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Mode Tampilan Timeline",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontWeight = FontWeight.Bold,
+                            color = colors.textPrimary
+                        )
+                        Text(
+                            text = if (uiState.timelineMode == "daily") 
+                                "Mode Harian: Hanya data hari ini + navigasi hari sebelumnya (Bebas Lag)" 
+                                else "Mode Normal: Menampilkan seluruh riwayat data sekaligus (Continuous Scroll)",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 11.sp,
+                            color = colors.textSecondary
+                        )
+                    }
+
+                    Icon(
+                        imageVector = Icons.Default.ViewAgenda,
+                        contentDescription = null,
+                        tint = colors.brandPrimary,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val timelineModes = listOf(
+                        "normal" to "📜 Mode Normal",
+                        "daily" to "📅 Mode Harian (Ringan)"
+                    )
+
+                    timelineModes.forEach { (mode, label) ->
+                        val isSelected = uiState.timelineMode == mode
+                        FilterChip(
+                            selected = isSelected,
+                            onClick = { viewModel.setTimelineMode(mode) },
+                            label = { Text(label, fontSize = 11.sp, fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal) },
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+        }
+
         // 2. EKSTRAK & BAGIKAN FILE APK (TANPA PC)
         Card(
             shape = RoundedCornerShape(12.dp),

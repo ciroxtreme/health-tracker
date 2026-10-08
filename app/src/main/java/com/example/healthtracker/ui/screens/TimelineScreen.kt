@@ -77,6 +77,9 @@ fun TimelineScreen(
     var selectedCategoryFilter by remember { mutableStateOf("SEMUA") } // SEMUA, GEJALA, EVALUASI, RUTINITAS
     var isSearchExpanded by remember { mutableStateOf(false) }
 
+    // Daily Mode Navigation state (Defaults to today in millis)
+    var selectedDailyDateMillis by remember { mutableStateOf(System.currentTimeMillis()) }
+
     val intervMap = remember(uiState.interventions) { uiState.interventions.associateBy { it.id } }
     val sympMap = remember(uiState.symptoms) { uiState.symptoms.associateBy { it.id } }
     val actMap = remember(uiState.activities) { uiState.activities.associateBy { it.id } }
@@ -103,14 +106,21 @@ fun TimelineScreen(
         }
     }
 
-    // Filtered entries based on search and date filter
-    val filteredEntries = remember(uiState.entries, searchQuery, selectedDateFilter) {
+    // Filtered entries based on search, date filter, and timeline mode (Normal vs Daily)
+    val filteredEntries = remember(uiState.entries, searchQuery, selectedDateFilter, uiState.timelineMode, selectedDailyDateMillis) {
         uiState.entries.filter { entry ->
-            val matchesDate = if (selectedDateFilter == null) true else {
+            val matchesDate = if (uiState.timelineMode == "daily") {
                 val calEntry = Calendar.getInstance().apply { timeInMillis = entry.occurrenceTime }
-                val calFilter = Calendar.getInstance().apply { timeInMillis = selectedDateFilter!! }
-                calEntry.get(Calendar.YEAR) == calFilter.get(Calendar.YEAR) &&
-                calEntry.get(Calendar.DAY_OF_YEAR) == calFilter.get(Calendar.DAY_OF_YEAR)
+                val calDaily = Calendar.getInstance().apply { timeInMillis = selectedDailyDateMillis }
+                calEntry.get(Calendar.YEAR) == calDaily.get(Calendar.YEAR) &&
+                calEntry.get(Calendar.DAY_OF_YEAR) == calDaily.get(Calendar.DAY_OF_YEAR)
+            } else {
+                if (selectedDateFilter == null) true else {
+                    val calEntry = Calendar.getInstance().apply { timeInMillis = entry.occurrenceTime }
+                    val calFilter = Calendar.getInstance().apply { timeInMillis = selectedDateFilter!! }
+                    calEntry.get(Calendar.YEAR) == calFilter.get(Calendar.YEAR) &&
+                    calEntry.get(Calendar.DAY_OF_YEAR) == calFilter.get(Calendar.DAY_OF_YEAR)
+                }
             }
 
             val matchesSearch = if (searchQuery.isBlank()) true else {
@@ -269,6 +279,107 @@ fun TimelineScreen(
                                 tint = if (colors.isDark) Color(0xFFFCD34D) else Color(0xFFB45309),
                                 modifier = Modifier.size(13.dp)
                             )
+                        }
+                    }
+                }
+            }
+
+            // Daily Mode Navigation Header (Active only in Daily Mode)
+            if (uiState.timelineMode == "daily") {
+                val dailyCal = remember(selectedDailyDateMillis) {
+                    Calendar.getInstance().apply { timeInMillis = selectedDailyDateMillis }
+                }
+                val isToday = remember(selectedDailyDateMillis) {
+                    val now = Calendar.getInstance()
+                    now.get(Calendar.YEAR) == dailyCal.get(Calendar.YEAR) &&
+                    now.get(Calendar.DAY_OF_YEAR) == dailyCal.get(Calendar.DAY_OF_YEAR)
+                }
+
+                Surface(
+                    color = colors.cardBackground,
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(0.75.dp, colors.cardBorder),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 14.dp, vertical = 4.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp, vertical = 6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        OutlinedButton(
+                            onClick = {
+                                selectedDailyDateMillis = Calendar.getInstance().apply {
+                                    timeInMillis = selectedDailyDateMillis
+                                    add(Calendar.DAY_OF_MONTH, -1)
+                                }.timeInMillis
+                            },
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Icon(Icons.Default.ChevronLeft, contentDescription = "Hari Sebelumnya", modifier = Modifier.size(16.dp))
+                            Text("Sebelumnya", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .clickable {
+                                    DatePickerDialog(
+                                        context,
+                                        { _, y, m, d ->
+                                            val newCal = Calendar.getInstance().apply {
+                                                set(Calendar.YEAR, y)
+                                                set(Calendar.MONTH, m)
+                                                set(Calendar.DAY_OF_MONTH, d)
+                                            }
+                                            selectedDailyDateMillis = newCal.timeInMillis
+                                        },
+                                        dailyCal.get(Calendar.YEAR),
+                                        dailyCal.get(Calendar.MONTH),
+                                        dailyCal.get(Calendar.DAY_OF_MONTH)
+                                    ).show()
+                                }
+                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                        ) {
+                            Text(
+                                text = dateHeaderFormat.format(Date(selectedDailyDateMillis)),
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = colors.brandPrimary
+                            )
+                            if (isToday) {
+                                Text(
+                                    text = "• Hari Ini •",
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = colors.textSecondary
+                                )
+                            } else {
+                                Text(
+                                    text = "(Klik untuk pilih tanggal)",
+                                    fontSize = 9.5.sp,
+                                    color = colors.textSecondary
+                                )
+                            }
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                selectedDailyDateMillis = Calendar.getInstance().apply {
+                                    timeInMillis = selectedDailyDateMillis
+                                    add(Calendar.DAY_OF_MONTH, 1)
+                                }.timeInMillis
+                            },
+                            enabled = !isToday,
+                            shape = RoundedCornerShape(8.dp),
+                            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text("Selanjutnya", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Icon(Icons.Default.ChevronRight, contentDescription = "Hari Selanjutnya", modifier = Modifier.size(16.dp))
                         }
                     }
                 }
@@ -464,6 +575,8 @@ fun TimelineScreen(
                         Text(
                             text = if (uiState.entries.isEmpty())
                                 "Mulai catat rutinitas harian, pemicu gejala, atau evaluasi respon intervensi."
+                            else if (uiState.timelineMode == "daily")
+                                "Tidak ada catatan kesehatan pada ${dateHeaderFormat.format(Date(selectedDailyDateMillis))}. Gunakan tombol '◀ Sebelumnya' untuk melihat hari terdahulu."
                             else "Coba gunakan kata kunci lain, reset tanggal, atau ubah kategori filter.",
                             style = MaterialTheme.typography.bodySmall,
                             color = colors.textSecondary,

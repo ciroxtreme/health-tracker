@@ -25,6 +25,7 @@ data class HealthUiState(
     val timeRangeFilter: TimeRangeFilter = TimeRangeFilter.LAST_30_DAYS,
     val uiDensityScale: Float = 0.85f,
     val themeMode: String = "light", // "light", "dark", "system"
+    val timelineMode: String = "normal", // "normal", "daily"
     val isAppLocked: Boolean = false,
     val isPinConfigured: Boolean = false,
     val statusMessage: String? = null
@@ -39,6 +40,7 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
     private val _timeRangeFilter = MutableStateFlow(TimeRangeFilter.LAST_30_DAYS)
     private val _uiDensityScale = MutableStateFlow(prefsManager.getUiDensityScale())
     private val _themeMode = MutableStateFlow(prefsManager.getThemeMode())
+    private val _timelineMode = MutableStateFlow(prefsManager.getTimelineMode())
     private val _isAppLocked = MutableStateFlow(prefsManager.isPinEnabled())
     private val _statusMessage = MutableStateFlow<String?>(null)
 
@@ -56,10 +58,11 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
         _timeRangeFilter,
         _uiDensityScale,
         _themeMode,
+        _timelineMode,
         _isAppLocked,
         _statusMessage
-    ) { filter, density, theme, isLocked, msg ->
-        SettingsData(filter, density, theme, isLocked, msg)
+    ) { filter, density, theme, timelineMode, isLocked, msg ->
+        SettingsData(filter, density, theme, timelineMode, isLocked, msg)
     }
 
     val uiState: StateFlow<HealthUiState> = combine(
@@ -86,6 +89,7 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
             timeRangeFilter = settings.filter,
             uiDensityScale = settings.density,
             themeMode = settings.theme,
+            timelineMode = settings.timelineMode,
             isAppLocked = settings.isLocked,
             isPinConfigured = prefsManager.isPinEnabled(),
             statusMessage = settings.msg
@@ -96,6 +100,7 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
         initialValue = HealthUiState(
             uiDensityScale = prefsManager.getUiDensityScale(),
             themeMode = prefsManager.getThemeMode(),
+            timelineMode = prefsManager.getTimelineMode(),
             isAppLocked = prefsManager.isPinEnabled(),
             isPinConfigured = prefsManager.isPinEnabled()
         )
@@ -105,6 +110,7 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
         val filter: TimeRangeFilter,
         val density: Float,
         val theme: String,
+        val timelineMode: String,
         val isLocked: Boolean,
         val msg: String?
     )
@@ -138,6 +144,12 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
         prefsManager.setThemeMode(mode)
         _themeMode.value = mode
         showStatus(if (mode == "dark") "Mode Gelap (Dark Mode) aktif." else "Mode Terang (Light Mode) aktif.")
+    }
+
+    fun setTimelineMode(mode: String) {
+        prefsManager.setTimelineMode(mode)
+        _timelineMode.value = mode
+        showStatus(if (mode == "daily") "Mode Timeline Harian (Daily) aktif." else "Mode Timeline Normal (Semua Histori) aktif.")
     }
 
     fun toggleThemeMode() {
