@@ -34,6 +34,7 @@ import com.example.healthtracker.ui.HealthViewModel
 import com.example.ui.theme.LocalHarmonizedColors
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -833,9 +834,43 @@ fun AddEntryScreen(
                                             }
                                         }
 
+                                        Spacer(modifier = Modifier.height(4.dp))
+
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                        ) {
+                                            (0..10).forEach { score ->
+                                                val isSelected = currentSev == score
+                                                Surface(
+                                                    color = if (isSelected) (if (score == 0) Color(0xFF059669) else getSeverityColor(score)) else colors.pillInactiveBg,
+                                                    shape = RoundedCornerShape(4.dp),
+                                                    border = BorderStroke(
+                                                        if (isSelected) 1.dp else 0.5.dp,
+                                                        if (isSelected) Color.Transparent else colors.cardBorder
+                                                    ),
+                                                    modifier = Modifier
+                                                        .weight(1f)
+                                                        .clickable { symptomSeverities[sympId] = score }
+                                                ) {
+                                                    Box(
+                                                        contentAlignment = Alignment.Center,
+                                                        modifier = Modifier.padding(vertical = 4.dp)
+                                                    ) {
+                                                        Text(
+                                                            text = "$score",
+                                                            fontSize = 10.sp,
+                                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                            color = if (isSelected) Color.White else colors.textPrimary
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+
                                         Slider(
                                             value = currentSev.toFloat(),
-                                            onValueChange = { symptomSeverities[sympId] = it.toInt() },
+                                            onValueChange = { symptomSeverities[sympId] = it.roundToInt() },
                                             valueRange = 0f..10f,
                                             steps = 9,
                                             modifier = Modifier

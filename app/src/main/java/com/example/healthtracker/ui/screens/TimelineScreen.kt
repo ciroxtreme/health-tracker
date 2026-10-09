@@ -50,6 +50,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.roundToInt
 
 @Composable
 fun TimelineScreen(
@@ -2216,7 +2217,7 @@ fun EditEvaluationModalDialog(
                             ) {
                                 Slider(
                                     value = curSev.toFloat(),
-                                    onValueChange = { symptomSeverities[sId] = it.toInt() },
+                                    onValueChange = { symptomSeverities[sId] = it.roundToInt() },
                                     valueRange = 0f..10f,
                                     steps = 9,
                                     modifier = Modifier.weight(1f)
@@ -2596,7 +2597,7 @@ fun RecordEvaluationDialog(
                                 ) {
                                     Slider(
                                         value = curSev.toFloat(),
-                                        onValueChange = { symptomSeverities[sId] = it.toInt() },
+                                        onValueChange = { symptomSeverities[sId] = it.roundToInt() },
                                         valueRange = 0f..10f,
                                         steps = 9,
                                         modifier = Modifier.weight(1f).testTag("eval_slider_$sId")
@@ -2612,6 +2613,40 @@ fun RecordEvaluationDialog(
                                             fontSize = 11.sp,
                                             modifier = Modifier.padding(horizontal = 7.dp, vertical = 3.dp)
                                         )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    (0..10).forEach { score ->
+                                        val isSelected = curSev == score
+                                        Surface(
+                                            color = if (isSelected) (if (score == 0) Color(0xFF059669) else getSeverityColor(score)) else colors.cardBg,
+                                            shape = RoundedCornerShape(4.dp),
+                                            border = BorderStroke(
+                                                if (isSelected) 1.dp else 0.5.dp,
+                                                if (isSelected) Color.Transparent else colors.cardBorder
+                                            ),
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .clickable { symptomSeverities[sId] = score }
+                                        ) {
+                                            Box(
+                                                contentAlignment = Alignment.Center,
+                                                modifier = Modifier.padding(vertical = 3.dp)
+                                            ) {
+                                                Text(
+                                                    text = "$score",
+                                                    fontSize = 10.sp,
+                                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                    color = if (isSelected) Color.White else colors.textPrimary
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -2869,9 +2904,47 @@ fun FollowUpInterventionDialog(
                             )
                         }
                     }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Deretan Tombol Angka Nyeri (0 - 10) untuk pemilihan instan dan presisi
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(3.dp)
+                    ) {
+                        (0..10).forEach { score ->
+                            val isSelected = newSeverity == score
+                            Surface(
+                                color = if (isSelected) (if (score == 0) Color(0xFF059669) else getSeverityColor(score)) else colors.pillInactiveBg,
+                                shape = RoundedCornerShape(4.dp),
+                                border = BorderStroke(
+                                    if (isSelected) 1.dp else 0.5.dp,
+                                    if (isSelected) Color.Transparent else colors.cardBorder
+                                ),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .clickable { newSeverity = score }
+                            ) {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.padding(vertical = 5.dp)
+                                ) {
+                                    Text(
+                                        text = "$score",
+                                        fontSize = 11.sp,
+                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                        color = if (isSelected) Color.White else colors.textPrimary
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
                     Slider(
                         value = newSeverity.toFloat(),
-                        onValueChange = { newSeverity = it.toInt() },
+                        onValueChange = { newSeverity = it.roundToInt() },
                         valueRange = 0f..10f,
                         steps = 9,
                         modifier = Modifier.fillMaxWidth().testTag("followup_severity_slider")
