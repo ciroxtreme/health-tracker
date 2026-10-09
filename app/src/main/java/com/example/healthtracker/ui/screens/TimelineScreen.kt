@@ -2625,7 +2625,7 @@ fun RecordEvaluationDialog(
                                     (0..10).forEach { score ->
                                         val isSelected = curSev == score
                                         Surface(
-                                            color = if (isSelected) (if (score == 0) Color(0xFF059669) else getSeverityColor(score)) else colors.cardBg,
+                                            color = if (isSelected) (if (score == 0) Color(0xFF059669) else getSeverityColor(score)) else colors.pillInactiveBg,
                                             shape = RoundedCornerShape(4.dp),
                                             border = BorderStroke(
                                                 if (isSelected) 1.dp else 0.5.dp,
